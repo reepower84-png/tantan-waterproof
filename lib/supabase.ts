@@ -1,9 +1,19 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
 const supabaseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || "").trim();
 const supabaseAnonKey = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "").trim();
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Create Supabase client only if URL is valid
+let supabase: SupabaseClient;
+
+if (supabaseUrl && supabaseUrl.startsWith("http")) {
+  supabase = createClient(supabaseUrl, supabaseAnonKey);
+} else {
+  // Dummy client for build time - will be properly initialized at runtime
+  supabase = createClient("https://placeholder.supabase.co", "placeholder");
+}
+
+export { supabase };
 
 export interface Inquiry {
   id: string;
