@@ -108,7 +108,7 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error("Supabase error:", error);
-      return NextResponse.json({ error: "Failed to add inquiry" }, { status: 500 });
+      return NextResponse.json({ error: "Failed to add inquiry", details: error.message, code: error.code }, { status: 500 });
     }
 
     // Discord 알림 전송
