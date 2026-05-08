@@ -616,6 +616,18 @@ export default function Home() {
                 {isSubmitting ? "전송 중..." : "무료 상담 신청하기"}
               </button>
 
+              <a
+                href="http://pf.kakao.com/_xlmxlhX/chat"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full py-4 rounded-xl font-bold text-lg transition-all bg-[#FEE500] hover:bg-[#FDD835] text-[#3C1E1E] shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M12 3C6.48 3 2 6.58 2 11c0 2.83 1.84 5.32 4.62 6.74-.2.71-.73 2.6-.84 3-.13.5.18.49.39.36.16-.1 2.59-1.76 3.64-2.48.71.1 1.44.16 2.19.16 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/>
+                </svg>
+                카카오톡으로 상담하기
+              </a>
+
               {submitStatus === "success" && (
                 <div className="p-4 bg-green-50 border border-green-200 rounded-xl text-center">
                   <p className="text-green-800 font-medium">
@@ -660,7 +672,7 @@ export default function Home() {
                 <p>상호: 제이코리아</p>
                 <p>대표: 이주영</p>
                 <p>사업자등록번호: 278-30-01540</p>
-                <p>주소: 인천광역시 계양구 오조산로57번길 15, 7층 7106호</p>
+                <p>주소: 서울특별시 강남구 도곡로84길 6, B1층 25-68호</p>
               </div>
             </div>
           </div>
