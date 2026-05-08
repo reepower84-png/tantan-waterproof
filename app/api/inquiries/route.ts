@@ -80,7 +80,7 @@ export async function GET() {
   }
 }
 
-// POST - 새 문의 추가
+// POST - 새 문의 접수 (Discord 다이렉트 알림)
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -93,31 +93,69 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { data, error } = await supabase
-      .from("inquiries")
-      .insert([
-        {
-          name,
-          phone,
-          message: message || "",
-          status: "대기중",
-        },
-      ])
-      .select()
-      .single();
+    // Discord 웹훅으로 직접 알림 전송
+    const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
 
-    if (error) {
-      console.error("Supabase error:", error);
-      return NextResponse.json({ error: "Failed to add inquiry", details: error.message, code: error.code }, { status: 500 });
+    if (!webhookUrl) {
+      console.error("Discord webhook URL is not configured");
+      return NextResponse.json({ error: "Notification service not configured" }, { status: 500 });
     }
 
-    // Discord 알림 전송
-    await sendDiscordNotification(data);
+    const now = new Date();
+    const discordMessage = {
+      embeds: [
+        {
+          title: "🔔 새로운 상담 문의가 접수되었습니다!",
+          color: 3447003,
+          fields: [
+            {
+              name: "이름",
+              value: name,
+              inline: true,
+            },
+            {
+              name: "전화번호",
+              value: phone,
+              inline: true,
+            },
+            {
+              name: "문의 내용",
+              value: message || "(내용 없음)",
+              inline: false,
+            },
+            {
+              name: "접수 시간",
+              value: now.toLocaleString("ko-KR", {
+                timeZone: "Asia/Seoul",
+              }),
+              inline: false,
+            },
+          ],
+          footer: {
+            text: "탄탄방수타일",
+          },
+          timestamp: now.toISOString(),
+        },
+      ],
+    };
 
-    return NextResponse.json(data, { status: 201 });
+    const discordResponse = await fetch(webhookUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(discordMessage),
+    });
+
+    if (!discordResponse.ok) {
+      console.error("Discord webhook failed:", discordResponse.status);
+      return NextResponse.json({ error: "Failed to send notification" }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true, name, phone, message }, { status: 201 });
   } catch (error) {
-    console.error("Failed to add inquiry:", error);
-    return NextResponse.json({ error: "Failed to add inquiry" }, { status: 500 });
+    console.error("Failed to process inquiry:", error);
+    return NextResponse.json({ error: "Failed to process inquiry" }, { status: 500 });
   }
 }
 
