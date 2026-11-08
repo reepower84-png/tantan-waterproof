@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase, Inquiry } from "@/lib/supabase";
+import { backupFetch } from "../../../lib/inquiry-backup";
 
 // Discord 웹훅으로 알림 전송
 async function sendDiscordNotification(inquiry: Inquiry) {
@@ -48,7 +49,7 @@ async function sendDiscordNotification(inquiry: Inquiry) {
   };
 
   try {
-    await fetch(webhookUrl, {
+    await backupFetch(webhookUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -139,7 +140,7 @@ export async function POST(request: NextRequest) {
       ],
     };
 
-    const discordResponse = await fetch(webhookUrl, {
+    const discordResponse = await backupFetch(webhookUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
